@@ -12,6 +12,7 @@ import (
 type SettingsWindow struct {
 	window  *widgets.QWidget
 	buttons []*widgets.QPushButton
+	sliders []*widgets.QSlider
 }
 
 type MainWindow struct {
@@ -29,16 +30,19 @@ func (qw *SettingsWindow) Init() {
 	qw.window.Move2(700, 200)
 }
 
-func (qw *SettingsWindow) appendControls(buttons []*widgets.QPushButton) {
+func (qw *SettingsWindow) appendControls(buttons []*widgets.QPushButton, sliders []*widgets.QSlider) {
 	qw.buttons = append(qw.buttons, buttons...)
-	buttonsLayout := widgets.NewQHBoxLayout()
+	qw.sliders = append(qw.sliders, sliders...)
 
+	buttonsLayout := widgets.NewQHBoxLayout()
 	for _, button := range qw.buttons {
 		buttonsLayout.AddWidget(button, 0, core.Qt__AlignCenter)
 	}
-
 	qw.window.Layout().AddItem(buttonsLayout)
-	qw.window.Layout().AddWidget(widgets.NewQSlider2(core.Qt__Horizontal, qw.window))
+
+	for _, slider := range qw.sliders {
+		qw.window.Layout().AddWidget(slider)
+	}
 }
 
 func (qw *SettingsWindow) setStyleSheet() {
@@ -46,7 +50,7 @@ func (qw *SettingsWindow) setStyleSheet() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	qw.window.SetStyleSheet(string((content)))
+	qw.window.SetStyleSheet(string(content))
 }
 
 func (mw *MainWindow) Init() {
@@ -81,7 +85,11 @@ func main() {
 	settings.appendControls([]*widgets.QPushButton{
 		widgets.NewQPushButton2("Press", settings.window),
 		widgets.NewQPushButton2("Me", settings.window),
-	})
+	},
+	[]*widgets.QSlider{
+		widgets.NewQSlider2(core.Qt__Horizontal, settings.window),
+	},
+	)
 
 	editor.window.Show()
 	settings.window.Show()
