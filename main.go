@@ -1,8 +1,11 @@
 package main
 
 import (
+	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
+	"io/ioutil"
+	"log"
 	"os"
 )
 
@@ -20,15 +23,30 @@ func (qw *SettingsWindow) Init() {
 	qw.window = widgets.NewQWidget(nil, 0)
 	qw.window.SetWindowTitle("Settings")
 	qw.window.SetMinimumSize2(200, 100)
+	qw.window.SetLayout(widgets.NewQVBoxLayout())
+	qw.setStyleSheet()
+
 	qw.window.Move2(700, 200)
 }
 
-func (qw *SettingsWindow) appendButtons(buttons []*widgets.QPushButton) {
+func (qw *SettingsWindow) appendControls(buttons []*widgets.QPushButton) {
 	qw.buttons = append(qw.buttons, buttons...)
+	buttonsLayout := widgets.NewQHBoxLayout()
 
 	for _, button := range qw.buttons {
-		qw.window.Layout().AddWidget(button)
+		buttonsLayout.AddWidget(button, 0, core.Qt__AlignCenter)
 	}
+
+	qw.window.Layout().AddItem(buttonsLayout)
+	qw.window.Layout().AddWidget(widgets.NewQSlider2(core.Qt__Horizontal, qw.window))
+}
+
+func (qw *SettingsWindow) setStyleSheet() {
+	content, err := ioutil.ReadFile("settings.qss")
+	if err != nil {
+		log.Fatal(err)
+	}
+	qw.window.SetStyleSheet(string((content)))
 }
 
 func (mw *MainWindow) Init() {
@@ -60,7 +78,10 @@ func main() {
 
 	editor.Init()
 	settings.Init()
-	settings.appendButtons([]*widgets.QPushButton{widgets.NewQPushButton(settings.window)})
+	settings.appendControls([]*widgets.QPushButton{
+		widgets.NewQPushButton2("Press", settings.window),
+		widgets.NewQPushButton2("Me", settings.window),
+	})
 
 	editor.window.Show()
 	settings.window.Show()
