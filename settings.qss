@@ -9,3 +9,29 @@ QPushButton {
 QPushButton:pressed {
     border: 3px solid;
 }
+
+QSlider::groove:horizontal
+{
+    border:none;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 10px;
+}
+
+QSlider::sub-page
+{
+    background: rgb(164, 192, 2);
+}
+
+QSlider::add-page
+{
+    background: rgb(70, 70, 70);
+}
+
+QSlider::handle
+{
+    background: white;
+    width: 20px;
+    min-height: 10px;
+    margin: -5px 0;
+}
