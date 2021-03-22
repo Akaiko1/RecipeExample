@@ -2,6 +2,8 @@ QPushButton {
     color: #ff0000;
     border: 2px solid;
     border-radius: 5px;
+    min-width: 100px;
+    min-height: 35px;
 }
 
 QPushButton:pressed {

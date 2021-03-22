@@ -24,11 +24,23 @@ type MainWindow struct {
 func (qw *SettingsWindow) Init() {
 	qw.window = widgets.NewQWidget(nil, 0)
 	qw.window.SetWindowTitle("Settings")
-	qw.window.SetMinimumSize2(200, 100)
+	qw.window.SetMinimumSize2(300, 100)
 	qw.window.SetLayout(widgets.NewQVBoxLayout())
 	qw.setStyleSheet()
 
 	qw.window.Move2(700, 200)
+}
+
+func (mw *MainWindow) Init() {
+	mw.window = widgets.NewQMainWindow(nil, 0)
+	mw.window.SetWindowTitle("Editor")
+	mw.window.SetMinimumSize2(500, 500)
+	mw.window.Move2(200, 200)
+	mw.overlay = widgets.NewQLabel(mw.window, 0)
+	mw.overlay.SetFixedSize(mw.window.Size())
+	mw.transparency = 0.25
+
+	mw.window.ConnectPaintEvent(mw.PaintSettings)
 }
 
 func (qw *SettingsWindow) appendControls(buttons []*widgets.QPushButton, sliders []*widgets.QSlider) {
@@ -52,17 +64,6 @@ func (qw *SettingsWindow) setStyleSheet() {
 		log.Fatal(err)
 	}
 	qw.window.SetStyleSheet(string(content))
-}
-
-func (mw *MainWindow) Init() {
-	mw.window = widgets.NewQMainWindow(nil, 0)
-	mw.window.SetWindowTitle("Editor")
-	mw.window.SetMinimumSize2(500, 500)
-	mw.window.Move2(200, 200)
-	mw.overlay = widgets.NewQLabel(mw.window, 0)
-	mw.overlay.SetFixedSize(mw.window.Size())
-
-	mw.window.ConnectPaintEvent(mw.PaintSettings)
 }
 
 func (mw *MainWindow) PaintSettings(event *gui.QPaintEvent)  {
@@ -90,7 +91,7 @@ func main() {
 
 	editor.Init()
 	settings.Init()
-	
+
 	sliderTransparency := widgets.NewQSlider2(core.Qt__Horizontal, settings.window)
 	sliderTransparency.SetValue(25)
 	sliderTransparency.ConnectSliderMoved(transparencyChanged)
