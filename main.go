@@ -41,6 +41,7 @@ func (mw *MainWindow) Init() {
 	mw.transparency = 0.25
 
 	mw.window.ConnectPaintEvent(mw.PaintSettings)
+	mw.window.ConnectCloseEvent(mw.closeMain)
 }
 
 func (qw *SettingsWindow) appendControls(buttons []*widgets.QPushButton, sliders []*widgets.QSlider) {
@@ -69,11 +70,14 @@ func (qw *SettingsWindow) setStyleSheet() {
 func (mw *MainWindow) PaintSettings(event *gui.QPaintEvent)  {
 	painter := gui.NewQPainter2(mw.window)
 	painter.DrawPixmap10(mw.window.Rect(), gui.NewQPixmap3("tray.png", "png", 0))
-	opacity := mw.transparency
-	painter.SetOpacity(opacity)
+	painter.SetOpacity(mw.transparency)
 	painter.DrawPixmap10(mw.overlay.Rect(), gui.NewQPixmap3("circles.bmp", "bmp", 0))
 	painter.DestroyQPainter()
 	mw.overlay.SetFixedSize(mw.window.Size())
+}
+
+func (mw *MainWindow) closeMain(event *gui.QCloseEvent)  {
+	settings.window.Close()
 }
 
 func transparencyChanged(value int) {
