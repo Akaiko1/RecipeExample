@@ -18,6 +18,7 @@ type SettingsWindow struct {
 type MainWindow struct {
 	window  *widgets.QMainWindow
 	overlay *widgets.QLabel
+	transparency float64
 }
 
 func (qw *SettingsWindow) Init() {
@@ -58,7 +59,6 @@ func (mw *MainWindow) Init() {
 	mw.window.SetWindowTitle("Editor")
 	mw.window.SetMinimumSize2(500, 500)
 	mw.window.Move2(200, 200)
-
 	mw.overlay = widgets.NewQLabel(mw.window, 0)
 	mw.overlay.SetFixedSize(mw.window.Size())
 
@@ -68,26 +68,39 @@ func (mw *MainWindow) Init() {
 func (mw *MainWindow) PaintSettings(event *gui.QPaintEvent)  {
 	painter := gui.NewQPainter2(mw.window)
 	painter.DrawPixmap10(mw.window.Rect(), gui.NewQPixmap3("tray.png", "png", 0))
-	painter.SetOpacity(0.25)
+	opacity := mw.transparency
+	painter.SetOpacity(opacity)
 	painter.DrawPixmap10(mw.overlay.Rect(), gui.NewQPixmap3("circles.bmp", "bmp", 0))
 	painter.DestroyQPainter()
 	mw.overlay.SetFixedSize(mw.window.Size())
 }
 
+func transparencyChanged(value int) {
+	editor.transparency = float64(value)/100.
+	editor.window.Repaint()
+}
+
+var (
+	editor MainWindow;
+	settings SettingsWindow
+)
+
 func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
 
-	var editor MainWindow
-	var settings SettingsWindow
-
 	editor.Init()
 	settings.Init()
+	
+	sliderTransparency := widgets.NewQSlider2(core.Qt__Horizontal, settings.window)
+	sliderTransparency.SetValue(25)
+	sliderTransparency.ConnectSliderMoved(transparencyChanged)
+
 	settings.appendControls([]*widgets.QPushButton{
 		widgets.NewQPushButton2("Press", settings.window),
 		widgets.NewQPushButton2("Me", settings.window),
 	},
 	[]*widgets.QSlider{
-		widgets.NewQSlider2(core.Qt__Horizontal, settings.window),
+		sliderTransparency,
 	},
 	)
 
